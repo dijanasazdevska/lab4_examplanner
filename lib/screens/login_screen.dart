@@ -23,16 +23,16 @@ class LoginScreen extends StatelessWidget{
     }
     final bloc = BlocProvider.of<PlannerBloc>(ctx);
     bloc.add(PlannerUserLoginEvent(username, password));
-    if(bloc.state is! PlannerNoUserState){
-      bloc.add(PlannerListInitializedEvent());
-      SchedulerBinding.instance!.addPostFrameCallback((_) {
-        Navigator.of(ctx).popAndPushNamed("/home");
-      });
-    }
   }
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PlannerBloc, PlannerState>(builder: (context, state){
+    return BlocConsumer<PlannerBloc, PlannerState>(
+      listener: (context,state){
+        if(state is! PlannerNoUserState){
+          Navigator.of(context).pushReplacementNamed("/home");
+
+        }
+      }, builder: (context, state){
       return Scaffold(appBar: AppBar(title: Text("Login")),
       body: Container(
       padding: EdgeInsets.all(8),

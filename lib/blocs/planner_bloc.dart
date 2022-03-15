@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geocoder/geocoder.dart';
 import 'package:lab4_examplanner/models/exam.dart';
+import 'package:lab4_examplanner/services/location_service.dart';
 import '../blocs/planner_event.dart';
 import '../blocs/planner_state.dart';
 import '../models/user.dart';
@@ -9,7 +11,8 @@ class PlannerBloc extends Bloc<PlannerEvent,PlannerState>{
   late User _currentUser;
   late DateTime currentDate;
   List<Exam> exams = [];
-  PlannerBloc() : super(PlannerNoUserState()){
+  LocationService locationService;
+  PlannerBloc( this.locationService) : super(PlannerNoUserState()){
     on<PlannerInitializedEvent>((event,emit){
       _users = [
         User("dijana.sazdevska","test123!"),
@@ -29,9 +32,7 @@ class PlannerBloc extends Bloc<PlannerEvent,PlannerState>{
         _currentUser = users.first;
         currentDate = DateTime.now();
         exams = _getExamsPerDay(currentDate);
-        exams.isNotEmpty?emit(PlannerListElementsState(exams)):PlannerListEmptyState();
-
-      }
+        exams.isNotEmpty?emit(PlannerListElementsState(exams)):PlannerListEmptyState();      }
       else{
         emit(PlannerNoUserState());
       }
@@ -51,7 +52,10 @@ class PlannerBloc extends Bloc<PlannerEvent,PlannerState>{
       exams.isNotEmpty?emit(PlannerListElementsState(exams)):emit(PlannerListEmptyState());
     });
 
-    on<PlannerListAddExamEvent>((event,emit){
+    on<PlannerListAddExamEvent>((event,emit) async {
+      Exam exam = event.exam;
+      final coordinates = await locationService.determinePosition();
+      exam.coordinates = coordinates;
       _currentUser.exams.add(event.exam);
       emit(PlannerListElementsState(exams));
     });

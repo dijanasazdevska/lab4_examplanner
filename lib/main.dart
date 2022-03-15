@@ -1,13 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lab4_examplanner/blocs/exams_bloc.dart';
-import 'package:lab4_examplanner/blocs/exams_event.dart';
-import 'package:lab4_examplanner/blocs/exams_state.dart';
-import 'package:lab4_examplanner/blocs/list_event.dart';
 import 'package:lab4_examplanner/blocs/planner_event.dart';
 import 'package:lab4_examplanner/screens/login_screen.dart';
-import 'blocs/list_bloc.dart';
+import 'package:lab4_examplanner/services/location_service.dart';
 import 'blocs/planner_bloc.dart';
 import 'screens/main_screen.dart';
 
@@ -23,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<PlannerBloc>(
-        create: (BuildContext context) => PlannerBloc()..add(PlannerInitializedEvent()),
+        create: (BuildContext context) => PlannerBloc(LocationService())..add(PlannerInitializedEvent()),
         child: MaterialApp(
           title: 'Exam Planner',
           theme: ThemeData(
